@@ -11,8 +11,6 @@ from booking_details import BookingDetails
 class Intent(Enum):
     BOOK_FLIGHT = "BookFlight"
     CANCEL = "Cancel"
-    GET_WEATHER = "GetWeather"
-    NONE_INTENT = "NoneIntent"
 
 
 def top_intent(intents: Dict[Intent, dict]) -> TopIntent:

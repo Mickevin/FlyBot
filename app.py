@@ -40,7 +40,7 @@ CONFIG = DefaultConfig()
 # See https://aka.ms/about-bot-adapter to learn more about how bots work.
 #CONFIG.APP_ID
 #CONFIG.APP_PASSWORD
-SETTINGS = BotFrameworkAdapterSettings("","")
+SETTINGS = BotFrameworkAdapterSettings(CONFIG.APP_ID,CONFIG.APP_PASSWORD)
 
 # Create MemoryStorage, UserState and ConversationState
 MEMORY = MemoryStorage()
@@ -73,7 +73,6 @@ BOT = DialogAndWelcomeBot(CONVERSATION_STATE, USER_STATE, DIALOG, TELEMETRY_CLIE
 
 # Listen for incoming requests on /api/messages.
 async def messages(req: Request) -> Response:
-    print(6)
     # Main bot message handler.
     if "application/json" in req.headers["Content-Type"]:
         body = await req.json()
