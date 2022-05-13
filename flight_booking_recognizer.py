@@ -46,4 +46,5 @@ class FlightBookingRecognizer(Recognizer):
         return self._recognizer is not None
 
     async def recognize(self, turn_context: TurnContext) -> RecognizerResult:
+        print(self._recognizer.recognize(turn_context))
         return await self._recognizer.recognize(turn_context)
