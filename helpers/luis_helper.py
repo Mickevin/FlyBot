@@ -101,5 +101,5 @@ class LuisHelper:
         except Exception as exception:
             print(exception)
 
-        print(result.budget, result.destination, result.end_date, result.start_date, result.origin)
+        #print(result.budget, result.destination, result.end_date, result.start_date, result.origin)
         return intent, result

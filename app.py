@@ -76,6 +76,7 @@ async def messages(req: Request) -> Response:
     # Main bot message handler.
     if "application/json" in req.headers["Content-Type"]:
         body = await req.json()
+        #print(body)
     else:
         return Response(status=HTTPStatus.UNSUPPORTED_MEDIA_TYPE)
 
@@ -83,8 +84,10 @@ async def messages(req: Request) -> Response:
     auth_header = req.headers["Authorization"] if "Authorization" in req.headers else ""
 
     response = await ADAPTER.process_activity(activity, auth_header, BOT.on_turn)
+    
     if response:
         return json_response(data=response.body, status=response.status)
+    
     return Response(status=HTTPStatus.OK)
 
 def init_func(_):
