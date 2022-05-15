@@ -22,3 +22,5 @@ class BookingDetails:
         self.start_date = start_date
         self.end_date = end_date
         self.budget = budget
+
+BookingDetails = BookingDetails()

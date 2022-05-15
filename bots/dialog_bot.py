@@ -13,6 +13,8 @@ from botbuilder.core import (
 from botbuilder.dialogs import Dialog, DialogExtensions
 from helpers.dialog_helper import DialogHelper
 
+from config import AppInsights
+
 
 class DialogBot(ActivityHandler):
     """Main activity handler for the bot."""
@@ -44,6 +46,7 @@ class DialogBot(ActivityHandler):
             turn_context,
             self.conversation_state.create_property("DialogState"),
         )
+        AppInsights.trace.append({'User':turn_context.activity.text})
 
         # Save any state changes that might have occured during the turn.
         await self.conversation_state.save_changes(turn_context, False)

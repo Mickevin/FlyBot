@@ -38,8 +38,7 @@ class My_bot:
         self.runtimeCredentials = CognitiveServicesCredentials(self.predictionKey)
         self.clientRuntime = LUISRuntimeClient(endpoint=self.predictionEndpoint,
                                                credentials=self.runtimeCredentials)
-
-        
+     
         self.data = {
             'or_city': False,
               'dst_city': False,

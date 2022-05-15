@@ -15,7 +15,7 @@ from botbuilder.core import (
     NullTelemetryClient,
 )
 from botbuilder.schema import InputHints
-
+from config import AppInsights
 
 from booking_details import BookingDetails
 from flight_booking_recognizer import FlightBookingRecognizer
@@ -67,6 +67,8 @@ class MainDialog(ComponentDialog):
             if step_context.options
             else "What can I help you with today?"
         )
+
+        AppInsights.start()
         prompt_message = MessageFactory.text(
             message_text, message_text, InputHints.expecting_input
         )
@@ -107,6 +109,11 @@ class MainDialog(ComponentDialog):
             didnt_understand_text = (
                 "Sorry, I didn't get that. Please try asking in a different way"
             )
+
+            AppInsights.warning(step_context.context.activity.text)
+            print(AppInsights.UserID, step_context.context.activity.text)
+
+
             didnt_understand_message = MessageFactory.text(
                 didnt_understand_text, didnt_understand_text, InputHints.ignoring_input
             )

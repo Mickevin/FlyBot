@@ -27,7 +27,7 @@ from botbuilder.integration.applicationinsights.aiohttp import (
     bot_telemetry_middleware,
 )
 
-from config import DefaultConfig
+from config import DefaultConfig, AppInsights
 from dialogs import MainDialog, BookingDialog
 from bots import DialogAndWelcomeBot
 
@@ -35,6 +35,7 @@ from adapter_with_error_handler import AdapterWithErrorHandler
 from flight_booking_recognizer import FlightBookingRecognizer
 
 CONFIG = DefaultConfig()
+
 
 # Create adapter.
 # See https://aka.ms/about-bot-adapter to learn more about how bots work.
@@ -70,13 +71,11 @@ BOOKING_DIALOG = BookingDialog()
 DIALOG = MainDialog(RECOGNIZER, BOOKING_DIALOG, telemetry_client=TELEMETRY_CLIENT)
 BOT = DialogAndWelcomeBot(CONVERSATION_STATE, USER_STATE, DIALOG, TELEMETRY_CLIENT)
 
-
 # Listen for incoming requests on /api/messages.
 async def messages(req: Request) -> Response:
     # Main bot message handler.
     if "application/json" in req.headers["Content-Type"]:
         body = await req.json()
-        #print(body)
     else:
         return Response(status=HTTPStatus.UNSUPPORTED_MEDIA_TYPE)
 
@@ -84,7 +83,7 @@ async def messages(req: Request) -> Response:
     auth_header = req.headers["Authorization"] if "Authorization" in req.headers else ""
 
     response = await ADAPTER.process_activity(activity, auth_header, BOT.on_turn)
-    
+
     if response:
         return json_response(data=response.body, status=response.status)
     

@@ -6,7 +6,7 @@ from botbuilder.ai.luis import LuisRecognizer
 from botbuilder.core import IntentScore, TopIntent, TurnContext
 
 from booking_details import BookingDetails
-from Luis_bot import My_bot
+from config import AppInsights
 
 class Intent(Enum):
     BOOK_FLIGHT = "FlyMe_Booking"
@@ -55,7 +55,7 @@ class LuisHelper:
 
             if intent == Intent.BOOK_FLIGHT.value:
                 
-                result = BookingDetails()
+                result = BookingDetails
 
                 # We need to get the result from the LUIS JSON which at every level returns an array.
                 to_entities = recognizer_result.entities.get("$instance", {}).get(
@@ -64,9 +64,8 @@ class LuisHelper:
 
                 if len(to_entities) > 0:
                     if recognizer_result.entities.get('dst_city')[0]:
-                        print(True)
                         result.destination = to_entities[0]["text"].capitalize()
-
+                        AppInsights.entities(turn_context.activity.text,'dst_city',result.destination)
                     else:
                         result.unsupported_airports.append(
                             to_entities[0]["text"].capitalize()
@@ -78,6 +77,7 @@ class LuisHelper:
                 if len(from_entities) > 0:
                     if recognizer_result.entities.get('or_city')[0]:
                         result.origin = from_entities[0]["text"].capitalize()
+                        AppInsights.entities(turn_context.activity.text , 'or_city', result.origin)
                     else:
                         result.unsupported_airports.append(
                             from_entities[0]["text"].capitalize()
@@ -92,7 +92,6 @@ class LuisHelper:
 
                     if timex:
                         datetime = timex[0].split("T")[0]
-
                         result.travel_date = datetime
 
                 else:
@@ -100,6 +99,8 @@ class LuisHelper:
 
         except Exception as exception:
             print(exception)
+        
+        AppInsights.entity.append(result)
 
         #print(result.budget, result.destination, result.end_date, result.start_date, result.origin)
         return intent, result

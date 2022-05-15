@@ -13,6 +13,7 @@ from botbuilder.dialogs.prompts import (
     DateTimeResolution,
 )
 from .cancel_and_help_dialog import CancelAndHelpDialog
+from booking_details import BookingDetails
 
 
 class DateResolverDialog(CancelAndHelpDialog):
@@ -49,7 +50,10 @@ class DateResolverDialog(CancelAndHelpDialog):
         """Prompt for the date."""
         timex = step_context.options
 
-        prompt_msg = "On what date would you like to travel?"
+        if BookingDetails.start_date == None:
+            prompt_msg = "What is the date of your departure ?"
+        else :
+            prompt_msg = "When would you like to return?"
         reprompt_msg = (
             "I'm sorry, for best results, please enter your travel "
             "date including the month, day and year."
