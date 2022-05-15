@@ -42,7 +42,6 @@ class LuisHelper:
 
         try:       
             recognizer_result = await luis_recognizer.recognize(turn_context)
-
             intent = (
                 sorted(
                     recognizer_result.intents,
@@ -83,6 +82,18 @@ class LuisHelper:
                             from_entities[0]["text"].capitalize()
                         )
 
+                budget_entities = recognizer_result.entities.get("$instance", {}).get(
+                    'budget', []
+                )
+                if len(budget_entities) > 0:
+                    if recognizer_result.entities.get('budget')[0]:
+                        result.budget = budget_entities[0]["text"].capitalize()
+                        AppInsights.entities(turn_context.activity.text , 'budget', result.budget)
+                    else:
+                        result.unsupported_airports.append(
+                            from_entities[0]["text"].capitalize()
+                        )
+
                 # This value will be a TIMEX. And we are only interested in a Date so grab the first result and drop
                 # the Time part. TIMEX is a format that represents DateTime expressions that include some ambiguity.
                 # e.g. missing a Year.
@@ -102,5 +113,4 @@ class LuisHelper:
         
         AppInsights.entity.append(result)
 
-        #print(result.budget, result.destination, result.end_date, result.start_date, result.origin)
         return intent, result

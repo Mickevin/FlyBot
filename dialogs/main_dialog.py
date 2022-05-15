@@ -111,8 +111,6 @@ class MainDialog(ComponentDialog):
             )
 
             AppInsights.warning(step_context.context.activity.text)
-            print(AppInsights.UserID, step_context.context.activity.text)
-
 
             didnt_understand_message = MessageFactory.text(
                 didnt_understand_text, didnt_understand_text, InputHints.ignoring_input
@@ -132,11 +130,14 @@ class MainDialog(ComponentDialog):
             # If the call to the booking service was successful tell the user.
             # time_property = Timex(result.travel_date)
             # travel_date_msg = time_property.to_natural_language(datetime.now())
-            msg_txt = f"I have you booked to {result.destination} from {result.origin} on {result.travel_date}"
-            message = MessageFactory.text(msg_txt, msg_txt, InputHints.ignoring_input)
-            await step_context.context.send_activity(message)
+            if result.travel_date:
+                msg_txt = f"I have you booked to {result.destination} from {result.origin} on {result.start_date}"
+                message = MessageFactory.text(msg_txt, msg_txt, InputHints.ignoring_input)
+                await step_context.context.send_activity(message)
+                prompt_message = "Thank you for your trust, see you soon ;)"
+                return await step_context.replace_dialog(self.id, prompt_message)
 
-        prompt_message = "What else can I do for you?"
+        prompt_message = "What else can I do for you???"
         return await step_context.replace_dialog(self.id, prompt_message)
 
     @staticmethod
