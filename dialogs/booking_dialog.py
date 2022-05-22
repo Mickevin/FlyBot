@@ -169,10 +169,12 @@ class BookingDialog(CancelAndHelpDialog):
         if step_context.result:
             booking_details = step_context.options
             booking_details.travel_date = step_context.result
-            AppInsights.info(f'End Conversation, UserID{DefaultConfig.CLIENT_ID}')
+            AppInsights.info(f'End Conversation, UserID{DefaultConfig.CLIENT_ID}', True)
 
             return await step_context.end_dialog(booking_details)
         else :
+            AppInsights.message_error()
+            AppInsights.critical(f'Failed End Conversation, UserID{DefaultConfig.CLIENT_ID}', True)
             booking_details = step_context.options
             BookingDetails.origin = None
             BookingDetails.destination = None

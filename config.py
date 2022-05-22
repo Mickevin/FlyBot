@@ -15,11 +15,11 @@ class DefaultConfig:
 
     PORT = 3978
     CLIENT_ID = randint(1e6, 1e7)
-    #PORT = 8000
+    PORT = 8000
     APP_ID = os.environ.get("MicrosoftAppId", "173dbf00-4b5a-4932-8e5f-1f9dd70dda38")
     APP_PASSWORD = os.environ.get("MicrosoftAppPassword", "80990656a996434895ec74d4e613ace3")
-    APP_ID = os.environ.get("MicrosoftAppId", "")
-    APP_PASSWORD = os.environ.get("MicrosoftAppPassword", "")
+    #APP_ID = os.environ.get("MicrosoftAppId", "")
+    #APP_PASSWORD = os.environ.get("MicrosoftAppPassword", "")
     LUIS_APP_ID = os.environ.get("LuisAppId", "fd24c90b-e679-4a4a-91d7-e0e3e35c8b13")
     LUIS_API_KEY = os.environ.get("LuisAPIKey", "123007a9fbfb4ec2bd2e4cd7c88c37fa")
     # LUIS endpoint host name, ie "westus.api.cognitive.microsoft.com"
@@ -58,6 +58,7 @@ class AppInsights():
     def info(self, message, entities=False):
         if entities:
             self.trace['entities'] = str(list(self.entity.values()))
+            self.trace['errors'] = self.err
         properties = {'custom_dimensions': self.trace}
         self.logger.setLevel(logging.INFO)
         self.logger.info(message, extra=properties)
@@ -77,7 +78,10 @@ class AppInsights():
         self.logger.error(message, extra=properties)
         
     # Fonction permettant d'envoyer des allerte de niveau critical  
-    def critical(self, message):
+    def critical(self, message,entities=False):
+        if entities:
+            self.trace['entities'] = str(list(self.entity.values()))
+            self.trace['errors'] = self.err
         properties = {'custom_dimensions': self.trace}
         
         self.logger.setLevel(logging.CRITICAL)
