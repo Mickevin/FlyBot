@@ -10,7 +10,7 @@ from botbuilder.core import (
     NullTelemetryClient,
 )
 
-from config import DefaultConfig
+from config import DefaultConfig, AppInsights
 
 
 class FlightBookingRecognizer(Recognizer):

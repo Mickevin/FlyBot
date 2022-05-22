@@ -6,7 +6,7 @@ from botbuilder.ai.luis import LuisRecognizer
 from botbuilder.core import IntentScore, TopIntent, TurnContext
 
 from booking_details import BookingDetails
-from config import AppInsights
+from config import AppInsights, DefaultConfig
 
 class Intent(Enum):
     BOOK_FLIGHT = "FlyMe_Booking"
@@ -39,7 +39,6 @@ class LuisHelper:
         """
         result = None
         intent = None
-
         try:       
             recognizer_result = await luis_recognizer.recognize(turn_context)
             intent = (
@@ -51,9 +50,12 @@ class LuisHelper:
                 if recognizer_result.intents
                 else None
             )
+            
 
             if intent == Intent.BOOK_FLIGHT.value:
-                
+                AppInsights.entity = dict(recognizer_result.entities)
+                AppInsights.info(f'Luis Prédiction UserID : {DefaultConfig.CLIENT_ID}', True)
+             
                 result = BookingDetails
 
                 # We need to get the result from the LUIS JSON which at every level returns an array.
@@ -64,7 +66,6 @@ class LuisHelper:
                 if len(to_entities) > 0:
                     if recognizer_result.entities.get('dst_city')[0]:
                         result.destination = to_entities[0]["text"].capitalize()
-                        AppInsights.entities(turn_context.activity.text,'dst_city',result.destination)
                     else:
                         result.unsupported_airports.append(
                             to_entities[0]["text"].capitalize()
@@ -76,7 +77,6 @@ class LuisHelper:
                 if len(from_entities) > 0:
                     if recognizer_result.entities.get('or_city')[0]:
                         result.origin = from_entities[0]["text"].capitalize()
-                        AppInsights.entities(turn_context.activity.text , 'or_city', result.origin)
                     else:
                         result.unsupported_airports.append(
                             from_entities[0]["text"].capitalize()
@@ -88,7 +88,6 @@ class LuisHelper:
                 if len(budget_entities) > 0:
                     if recognizer_result.entities.get('budget')[0]:
                         result.budget = budget_entities[0]["text"].capitalize()
-                        AppInsights.entities(turn_context.activity.text , 'budget', result.budget)
                     else:
                         result.unsupported_airports.append(
                             from_entities[0]["text"].capitalize()
@@ -107,10 +106,10 @@ class LuisHelper:
 
                 else:
                     result.travel_date = None
+            else:
+                AppInsights.info(f'No Luis Prédiction UserID :{DefaultConfig.CLIENT_ID}')
 
         except Exception as exception:
             print(exception)
-        
-        AppInsights.entity.append(result)
 
         return intent, result

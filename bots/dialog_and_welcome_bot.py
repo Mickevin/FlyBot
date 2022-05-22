@@ -15,6 +15,7 @@ from botbuilder.core import (
 from botbuilder.schema import Activity, Attachment, ChannelAccount
 from helpers.activity_helper import create_activity_reply
 from .dialog_bot import DialogBot
+from config import AppInsights, DefaultConfig
 
 
 class DialogAndWelcomeBot(DialogBot):
@@ -31,6 +32,8 @@ class DialogAndWelcomeBot(DialogBot):
             conversation_state, user_state, dialog, telemetry_client
         )
         self.telemetry_client = telemetry_client
+
+        AppInsights.info(f'Start conversation User{DefaultConfig.CLIENT_ID}', None)
 
     async def on_members_added_activity(
         self, members_added: List[ChannelAccount], turn_context: TurnContext

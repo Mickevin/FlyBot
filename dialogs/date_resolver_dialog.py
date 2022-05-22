@@ -14,7 +14,7 @@ from botbuilder.dialogs.prompts import (
 )
 from .cancel_and_help_dialog import CancelAndHelpDialog
 from booking_details import BookingDetails
-
+from config import AppInsights
 
 class DateResolverDialog(CancelAndHelpDialog):
     """Resolve the date"""
@@ -58,6 +58,8 @@ class DateResolverDialog(CancelAndHelpDialog):
             "I'm sorry, for best results, please enter your travel "
             "date including the month, day and year."
         )
+        AppInsights.message_error()
+
 
         if timex is None:
             # We were not given any date at all so prompt the user.

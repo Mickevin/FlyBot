@@ -10,7 +10,7 @@ from botbuilder.dialogs import (
     DialogTurnStatus,
 )
 from botbuilder.schema import ActivityTypes
-
+from config import AppInsights
 
 class CancelAndHelpDialog(ComponentDialog):
     """Implementation of handling cancel and help."""
@@ -48,7 +48,8 @@ class CancelAndHelpDialog(ComponentDialog):
                 await inner_dc.context.send_activity("Show Help...")
                 return DialogTurnResult(DialogTurnStatus.Waiting)
 
-            if text in ("cancel", "quit"):
+            if text in ("cancel", "quit", "exit", 'close', "end"):
+                AppInsights.info(f'End conversation - ClosUser{AppInsights.UserID}')
                 await inner_dc.context.send_activity("Cancelling")
                 return await inner_dc.cancel_all_dialogs()
 

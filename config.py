@@ -20,7 +20,7 @@ class DefaultConfig:
     APP_PASSWORD = os.environ.get("MicrosoftAppPassword", "80990656a996434895ec74d4e613ace3")
     APP_ID = os.environ.get("MicrosoftAppId", "")
     APP_PASSWORD = os.environ.get("MicrosoftAppPassword", "")
-    LUIS_APP_ID = os.environ.get("LuisAppId", "9b0fd8a7-81ed-402c-a2a0-b534ee7d78cf")
+    LUIS_APP_ID = os.environ.get("LuisAppId", "fd24c90b-e679-4a4a-91d7-e0e3e35c8b13")
     LUIS_API_KEY = os.environ.get("LuisAPIKey", "123007a9fbfb4ec2bd2e4cd7c88c37fa")
     # LUIS endpoint host name, ie "westus.api.cognitive.microsoft.com"
     LUIS_API_HOST_NAME = os.environ.get("LuisAPIHostName", "languep10-authoring.cognitiveservices.azure.com/")
@@ -36,45 +36,52 @@ class AppInsights():
         self.logger = logging.getLogger(__name__)
         self.logger.addHandler(AzureEventHandler(connection_string=self.key))
         self.logger.setLevel(logging.INFO)
-        self.entity = []
-        self.trace = []
-        
-    def start(self):
-        self.logger.info(f'Application started correctly. User ID : {self.UserID}')
-        
-    def info(self):
-        pass
+        self.entity = None
+        self.trace = {}
+        self.n_message = 0
+        self.err = 0
     
+    def n_messages(self):
+        self.n_message+=1
+        if self.n_message >10 and self.n_message <15:
+            self.warning(f'Warning, to many message User{self.UserID}')
+
+        elif self.n_message >15:
+            self.critical(f'Warning, to many message User{self.UserID}')
+
+    def message_error(self):
+        self.err+=1
+        if self.err >3:
+            self.error(f'To many message eroro UserID {DefaultConfig.CLIENT_ID}')
+
+    # Fonction permettant d'envoyer des allerte de niveau info
+    def info(self, message, entities=False):
+        if entities:
+            self.trace['entities'] = str(list(self.entity.values()))
+        properties = {'custom_dimensions': self.trace}
+        self.logger.setLevel(logging.INFO)
+        self.logger.info(message, extra=properties)
+        
+    # Fonction permettant d'envoyer des allerte de niveau warning  
     def warning(self, message):
-        properties = {'custom_dimensions':{
-                      'message' : message,
-                      'trace' : self.trace}}
+        properties = {'custom_dimensions': self.trace}
+        
         self.logger.setLevel(logging.WARNING)
-        self.logger.warning(f'Messagerie failled : {self.UserID}', properties)
+        self.logger.warning(message, extra=properties)
         
-    
-    def traces(self, message, agent):
-        properties = {'messages': {agent: message}}
-        self.logger.setLevel(logging.INFO)
-        self.logger.info(f'Messages User ID :{self.UserID}', extra=properties)
+    # Fonction permettant d'envoyer des allerte de niveau error  
+    def error(self, message):
+        properties = {'custom_dimensions': self.trace}
         
+        self.logger.setLevel(logging.ERROR)
+        self.logger.error(message, extra=properties)
         
-    def entities(self, message, val_entity, entity):
-        properties = {'custom_dimensions':{'messages': message,
-                     'entity': entity,
-                     'val_entity': val_entity}}
-        self.logger.setLevel(logging.INFO)
-        self.logger.info(f'Messages User ID :{self.UserID}', extra=properties)
-        self.entity.append(entity)
-    
-    def end_conversation(self):
-        properties = {'messages':'Fin de conversation',
-                      'User ID' : self.UserID,
-                      'trace' : self.trace,
-                      'entity': self.entity
-                     }
-        self.logger.setLevel(logging.INFO)
-        self.logger.info('Info', extra=properties)
+    # Fonction permettant d'envoyer des allerte de niveau critical  
+    def critical(self, message):
+        properties = {'custom_dimensions': self.trace}
+        
+        self.logger.setLevel(logging.CRITICAL)
+        self.logger.critical(message, extra=properties)
 
 
 AppInsights = AppInsights(DefaultConfig.CLIENT_ID, DefaultConfig.APPINSIGHTS_INSTRUMENTATION_KEY)

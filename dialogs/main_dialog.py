@@ -15,7 +15,7 @@ from botbuilder.core import (
     NullTelemetryClient,
 )
 from botbuilder.schema import InputHints
-from config import AppInsights
+from config import AppInsights, DefaultConfig
 
 from booking_details import BookingDetails
 from flight_booking_recognizer import FlightBookingRecognizer
@@ -68,7 +68,6 @@ class MainDialog(ComponentDialog):
             else "What can I help you with today?"
         )
 
-        AppInsights.start()
         prompt_message = MessageFactory.text(
             message_text, message_text, InputHints.expecting_input
         )
@@ -110,7 +109,7 @@ class MainDialog(ComponentDialog):
                 "Sorry, I didn't get that. Please try asking in a different way"
             )
 
-            AppInsights.warning(step_context.context.activity.text)
+            AppInsights.message_error()
 
             didnt_understand_message = MessageFactory.text(
                 didnt_understand_text, didnt_understand_text, InputHints.ignoring_input
@@ -154,6 +153,7 @@ class MainDialog(ComponentDialog):
                 f"Sorry but the following airports are not supported:"
                 f" {', '.join(luis_result.unsupported_airports)}"
             )
+            AppInsights.message_error()
             message = MessageFactory.text(
                 message_text, message_text, InputHints.ignoring_input
             )

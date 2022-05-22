@@ -46,7 +46,8 @@ class DialogBot(ActivityHandler):
             turn_context,
             self.conversation_state.create_property("DialogState"),
         )
-        AppInsights.trace.append({'User':turn_context.activity.text})
+        AppInsights.trace[f'Message_{AppInsights.n_message}'] = turn_context.activity.text
+        AppInsights.n_messages()
 
         # Save any state changes that might have occured during the turn.
         await self.conversation_state.save_changes(turn_context, False)

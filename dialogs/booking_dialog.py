@@ -10,7 +10,7 @@ from botbuilder.core import MessageFactory, BotTelemetryClient, NullTelemetryCli
 from .cancel_and_help_dialog import CancelAndHelpDialog
 from .date_resolver_dialog import DateResolverDialog
 from booking_details import BookingDetails
-
+from config import AppInsights, DefaultConfig
 
 class BookingDialog(CancelAndHelpDialog):
     """Flight booking implementation."""
@@ -63,6 +63,7 @@ class BookingDialog(CancelAndHelpDialog):
                     prompt=MessageFactory.text("To what city would you like to travel?")
                 ),
             )  # pylint: disable=line-too-long,bad-continuation
+            
 
         return await step_context.next(booking_details.destination)
 
@@ -77,7 +78,7 @@ class BookingDialog(CancelAndHelpDialog):
             return await step_context.prompt(
                 TextPrompt.__name__,
                 PromptOptions(
-                    prompt=MessageFactory.text("From what city will you be travelling?")
+                    prompt=MessageFactory.text("From what city will you be travelling ?")
                 ),
             )  # pylint: disable=line-too-long,bad-continuation
 
@@ -151,6 +152,7 @@ class BookingDialog(CancelAndHelpDialog):
 
         # Capture the results of the previous step
         booking_details.budget = step_context.result
+
         msg = (
             f"Please confirm, I have you traveling to: { booking_details.destination }"
             f" from: { booking_details.origin } between: { booking_details.start_date} and { booking_details.end_date}."
@@ -167,6 +169,7 @@ class BookingDialog(CancelAndHelpDialog):
         if step_context.result:
             booking_details = step_context.options
             booking_details.travel_date = step_context.result
+            AppInsights.info(f'End Conversation, UserID{DefaultConfig.CLIENT_ID}')
 
             return await step_context.end_dialog(booking_details)
         else :
