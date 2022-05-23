@@ -29,9 +29,9 @@ class Test_Insights(unittest.TestCase):
         CONFIG = DefaultConfig()
         try:
             logger = logging.getLogger(__name__)
-            logger.addHandler(AzureLogHandler(connection_string=CONFIG.LUIS_API_KEY))
+            logger.addHandler(AzureLogHandler(connection_string=CONFIG.APPINSIGHTS_INSTRUMENTATION_KEY))
         except:
-            self.assert(True, True)
+            self.assertIsNot(True, True)
 
 
 if __name__ == '__main__':
