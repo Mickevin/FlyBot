@@ -3,6 +3,9 @@ from config import DefaultConfig
 from flight_booking_recognizer import FlightBookingRecognizer    # The code to test
 import unittest   # The test framework
 
+import logging
+from opencensus.ext.azure.log_exporter import AzureLogHandler
+
 class Test_Config(unittest.TestCase):
     def test_config(self):
         CONFIG = DefaultConfig()
@@ -23,7 +26,12 @@ class Test_Luis(unittest.TestCase):
         
 class Test_Insights(unittest.TestCase):
     def test_AppInsights_connexion(self):
-        self.assertEqual(True, True)
+        CONFIG = DefaultConfig()
+        try:
+            logger = logging.getLogger(__name__)
+            logger.addHandler(AzureLogHandler(connection_string=CONFIG.LUIS_API_KEY))
+        except:
+            self.assert(True, True)
 
 
 if __name__ == '__main__':
