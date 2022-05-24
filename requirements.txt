@@ -1,3 +1,4 @@
+asyncio>=3.4.3
 requests==2.23.0
 botbuilder-core>=4.14.0
 botframework-connector>=4.14.0
@@ -11,6 +12,5 @@ azure-cognitiveservices-language-luis>=0.2.0
 msrest>=0.6.10
 Flask==1.1.1
 Jinja2==3.1.1
-aiohttp==3.6.2
 aiounittest
 opencensus-ext-azure
